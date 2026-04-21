@@ -8,7 +8,6 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
-    private String username;
 
     public ClientHandler(Socket socket) {
         this.socket = socket;
@@ -17,17 +16,13 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            output = new PrintWriter(socket.getOutputStream(), true);
+            input = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream()));
+            output = new PrintWriter(
+                    socket.getOutputStream(), true);
 
-            // Solicitar nombre
-            output.println("Introduce tu nombre:");
-            username = input.readLine();
-
-            System.out.println(username + " se ha conectado");
-            output.println("Bienvenido " + username);
-
-            Server.broadcast(username + " se ha unido al chat", this);
+            // Mensaje de bienvenida
+            output.println("Bienvenido al servidor");
 
             String message;
 
@@ -35,30 +30,26 @@ public class ClientHandler implements Runnable {
             while ((message = input.readLine()) != null) {
 
                 if (message.equalsIgnoreCase("salir")) {
+                    System.out.println("Cliente desconectado");
+                    output.println("Conexión cerrada. Hasta luego!");
                     break;
                 }
 
-                String fullMessage = username + ": " + message;
-                System.out.println(fullMessage);
+                // Mostrar mensaje en servidor
+                System.out.println("Cliente: " + message);
 
-                Server.broadcast(fullMessage, this);
+                // Respuesta al cliente
+                output.println("Servidor recibió: " + message);
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error con el cliente");
         } finally {
             try {
-                Server.removeClient(this);
                 socket.close();
-                System.out.println(username + " se ha desconectado");
-                Server.broadcast(username + " ha salido del chat", this);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void sendMessage(String message) {
-        output.println(message);
     }
 }

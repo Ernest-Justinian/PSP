@@ -12,9 +12,12 @@ public class Client {
 
         try (
             Socket socket = new Socket(HOST, PORT);
-            BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter output = new PrintWriter(socket.getOutputStream(), true)
+            BufferedReader console = new BufferedReader(
+                    new InputStreamReader(System.in));
+            BufferedReader input = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream()));
+            PrintWriter output = new PrintWriter(
+                    socket.getOutputStream(), true)
         ) {
 
             // Hilo para recibir mensajes del servidor
@@ -29,15 +32,18 @@ public class Client {
                 }
             }).start();
 
-            // Enviar mensajes al servidor
+            // Leer del teclado y enviar al servidor
             String userInput;
             while ((userInput = console.readLine()) != null) {
+
                 output.println(userInput);
 
                 if (userInput.equalsIgnoreCase("salir")) {
                     break;
                 }
             }
+
+            socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();
