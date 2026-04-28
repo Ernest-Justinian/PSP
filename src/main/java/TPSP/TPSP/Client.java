@@ -20,7 +20,7 @@ public class Client {
                     socket.getOutputStream(), true)
         ) {
 
-            // Hilo para recibir mensajes del servidor
+            // Hilo para recibir mensajes
             new Thread(() -> {
                 try {
                     String response;
@@ -32,18 +32,15 @@ public class Client {
                 }
             }).start();
 
-            // Leer del teclado y enviar al servidor
+            // Enviar mensajes
             String userInput;
             while ((userInput = console.readLine()) != null) {
-
                 output.println(userInput);
 
                 if (userInput.equalsIgnoreCase("salir")) {
                     break;
                 }
             }
-
-            socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();

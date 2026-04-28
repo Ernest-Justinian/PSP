@@ -1,7 +1,6 @@
 package TPSP.TPSP;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class Server {
 
@@ -12,12 +11,15 @@ public class Server {
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
 
+            // Servidor en ejecución continua
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("Nuevo cliente conectado");
+                System.out.println("Nuevo cliente conectado: " + socket.getInetAddress());
 
+                // Crear hilo para ese cliente
                 ClientHandler clientHandler = new ClientHandler(socket);
-                new Thread(clientHandler).start();
+                Thread thread = new Thread(clientHandler);
+                thread.start();
             }
 
         } catch (IOException e) {
