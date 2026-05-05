@@ -8,6 +8,7 @@ public class ClientHandler implements Runnable {
     private Socket socket;
     private BufferedReader input;
     private PrintWriter output;
+    private String username;
 
     public ClientHandler(Socket socket) {
         this.socket = socket;
@@ -21,37 +22,65 @@ public class ClientHandler implements Runnable {
             output = new PrintWriter(
                     socket.getOutputStream(), true);
 
-            // Mensaje de bienvenida
-            output.println("Bienvenido al servidor");
-            System.out.println("Hilo iniciado para: " + socket.getInetAddress());
+            // 🔹 Solicitar nombre
+            output.println("Introduce tu nombre o alias:");
+            username = input.readLine();
 
-            String message;
+            System.out.println("Usuario conectado: " + username +
+                    " (" + socket.getInetAddress() + ")");
 
-            // Comunicación continua con ESTE cliente
-            while ((message = input.readLine()) != null) {
+            output.println("Bienvenido, " + username);
 
-                if (message.equalsIgnoreCase("salir")) {
-                    System.out.println("Cliente " + socket.getInetAddress() + " ha salido");
-                    output.println("Conexión cerrada. Hasta luego!");
-                    break;
+            String option;
+
+            // 🔹 Bucle del menú
+            while (true) {
+
+                mostrarMenu();
+
+                option = input.readLine();
+
+                if (option == null) break;
+
+                switch (option) {
+                    case "1":
+                        output.println("Has seleccionado denunciar una situación");
+                        output.println("(Continuará en la siguiente práctica)");
+                        break;
+
+                    case "2":
+                        output.println("Este sistema permite reportar situaciones de bullying de forma anónima.");
+                        break;
+
+                    case "3":
+                        output.println("Hasta luego, " + username);
+                        System.out.println(username + " ha salido");
+                        socket.close();
+                        return;
+
+                    default:
+                        output.println("Opción no válida");
                 }
-
-                // Mostrar mensaje en servidor
-                System.out.println("[" + socket.getInetAddress() + "] " + message);
-
-                // Respuesta al cliente
-                output.println("Servidor recibió: " + message);
             }
 
         } catch (IOException e) {
-            System.out.println("Error con cliente: " + socket.getInetAddress());
+            System.out.println("Error con cliente: " + username);
         } finally {
             try {
                 socket.close();
-                System.out.println("Conexión cerrada: " + socket.getInetAddress());
+                System.out.println("Conexión cerrada: " + username);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void mostrarMenu() {
+        output.println("");
+        output.println("----- MENÚ -----");
+        output.println("1. Denunciar una situación");
+        output.println("2. Consultar información");
+        output.println("3. Salir");
+        output.println("Elige una opción:");
     }
 }

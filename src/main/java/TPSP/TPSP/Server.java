@@ -11,15 +11,12 @@ public class Server {
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
 
-            // Servidor en ejecución continua
             while (true) {
                 Socket socket = serverSocket.accept();
                 System.out.println("Nuevo cliente conectado: " + socket.getInetAddress());
 
-                // Crear hilo para ese cliente
                 ClientHandler clientHandler = new ClientHandler(socket);
-                Thread thread = new Thread(clientHandler);
-                thread.start();
+                new Thread(clientHandler).start();
             }
 
         } catch (IOException e) {
